@@ -1,0 +1,17 @@
+{
+  "name": "guitar-patches",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node_modules/.bin/nodemon index.js --ext js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "cheerio": "^1.0.0-rc.10",
+    "nodemon": "^2.0.20"
+  }
+}
