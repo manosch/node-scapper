@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import fs from 'fs/promises';
 
-let songs = [];
 const baseUrl = `https://guitarpatches.com/patches.php?unit=G1`;
 
 const getSongs = (pageData) => {
@@ -18,6 +17,24 @@ const getSongs = (pageData) => {
 		songsArr.push({ title, link, artist, id, date, uploader });
 	});
 	return songsArr;
+}
+
+const getSongMetadata = async (song) => {
+	let $ = loadCheerio(await getPageData(`${baseUrl}&mode=show&ID=${song.id}`));
+	let patches = []
+	let params = [];
+
+	$('.glassbox > .gradback').first().find('.paramheader').each(function (index) {
+
+		const [patchTitle, patchValue] = $(this).text().trim().split(':')
+		params = [];
+		$(this).nextUntil('.clear').each(function () {
+			const [paramName, paramValue] = $(this).text().trim().split(':');
+			params.push({ paramName, paramValue })
+		});
+		patches.push({ patchTitle, patchValue: patchValue.trim(), params });
+	});
+	return patches;
 }
 
 const getSongId = (songLink) => {
@@ -76,4 +93,19 @@ const loadSongsList = async () => {
 		.map(result => result.value).map(page => getSongs(page)).flat();
 }
 
-await writeSongs(await loadSongsList());
+const loadSongsWithMetadata = async () => {
+	let songs = await loadSongsList();
+	songs = songs.map(async (song) => {
+		return {
+			...song,
+			patches: await getSongMetadata(song)
+		}
+	})
+	return (await Promise.allSettled(songs)).map(result => result.value)
+}
+
+const writeSongsWithMetadata = async () => {
+	await writeSongs(await loadSongsWithMetadata())
+}
+
+await writeSongsWithMetadata()
