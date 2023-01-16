@@ -73,7 +73,7 @@ const loadCheerio = (html) => {
 
 const writeSongs = async (songs) => {
 	try {
-		await fs.writeFile('songs.json', JSON.stringify(songs));
+		await fs.writeFile('./db/songs.json', JSON.stringify(songs));
 	} catch (err) {
 		console.log(err);
 	}
@@ -108,4 +108,14 @@ const writeSongsWithMetadata = async () => {
 	await writeSongs(await loadSongsWithMetadata())
 }
 
-await writeSongsWithMetadata()
+export const checkSongsDb = async () => {
+	let songsDb;
+	try {
+		songsDb = JSON.parse(await fs.readFile('./db/songs.json'));
+		if (!songsDb.length) {
+			await writeSongsWithMetadata();
+		}
+	} catch (err) {
+		console.log(err);
+	}
+}
