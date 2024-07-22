@@ -11,7 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.25.0",
-    "cheerio": "^1.0.0-rc.10",
+    "axios-rate-limit": "^1.4.0",
+    "cheerio": "^1.0.0-rc.10"
+  },
+  "devDependencies": {
     "nodemon": "^2.0.20"
   }
 }

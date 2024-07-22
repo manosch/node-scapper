@@ -1,8 +1,10 @@
 import axios from 'axios';
+import rateLimit from 'axios-rate-limit';
 import * as cheerio from 'cheerio';
 import fs from 'fs/promises';
 
 const baseUrl = `https://guitarpatches.com/patches.php?unit=G1`;
+const http = rateLimit(axios.create(), { maxRequests: 18, perMilliseconds: 1000, maxRPS: 20 })
 
 const getSongs = (pageData) => {
 	const songsArr = [];
@@ -59,7 +61,8 @@ const getTotalPages = ($) => {
 
 const getPageData = async (url) => {
 	console.log('Processing url: ', url);
-	let response = await axios(url).catch((err) => console.log(err));
+	const response = await http.get(url).catch((err) => console.log(err));
+
 	if (!response) {
 		console.log("Error occurred while fetching data");
 		return '';
